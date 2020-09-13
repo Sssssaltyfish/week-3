@@ -1,0 +1,71 @@
+{% load static %}
+{% load search_extras %}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="descrition" content="{{ description }}">
+    <meta name="referrer" content="no-referrer">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'extra.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
+    <script type="text/javascript" src="{% static 'jquery.js' %}"></script>
+    <script type="text/javascript">function check_empty(target, f = () => true) {
+            return function () {
+                if ($(this).val() != '' && f($('#' + target))) {
+                    $('#' + target).removeAttr('disabled');
+                } else {
+                    $('#' + target).attr('disabled', '');
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="head" style="margin-top: 5em;"></div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top">
+        <span class="navbar-brand mb-0 h1">Da Zuo Ye</span>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'index' %}">Homepage(?)</a>
+                </li>
+                <a class="nav-link" href="{% url 'list-all' page_type='movies' %}">Movies</a>
+                <a class="nav-link" href="{% url 'list-all' page_type='actors' %}">Actors</a>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" method="POST" action="/search">
+                {% csrf_token %}
+                <input class="form-control mr-sm-2" type="search" name="search" id="content-input" placeholder="Search"
+                    aria-label="Search">
+                <div class="form-group">
+                    {% with 'actor movie comment' as list %}
+                    {% for check_type in list.split %}
+                    <div class="form-check form-check-inline">
+                        <input type="radio" class="form-check-input" id="search-{{ check_type }}" name="search-type"
+                            value="{{ check_type }}"
+                            oninput="{ $('#go').removeAttr('no-radio'); if ($('#content-input').val() != '') $('#go').removeAttr('disabled'); }">
+                        <label class="form-check-label" for="search-{{ check_type }}">
+                            <h7 style="color: rgba(176, 224, 230, 0.3);">{{ check_type|title }}</h7>
+                        </label>
+                    </div>
+                    {% endfor %}
+                    {% endwith %}
+                </div>
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="go">Search</button>
+                <script type="text/javascript">
+                    var go = $('#go');
+                    go.attr('disabled', '');
+                    go.attr('no-radio', 'no-radio');
+                    $('#content-input').on('input', check_empty('go', elem => !elem.attr('no-radio')));
+                </script>
+            </form>
+        </div>
+    </nav>
+    {% block content %}{% endblock %}
+</body>
+
+</html>

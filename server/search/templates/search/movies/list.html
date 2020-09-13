@@ -1,0 +1,23 @@
+{% extends '../list.html' %}
+
+{% block grid %}
+<div class="container">
+    <ul class="list-unstyled">
+        {% for movie in page.object_list %}
+        <li class="media mb-4">
+            <a href="{% url 'movie-detail' movie.title %}">
+                <img class="align-self-center ml-3 mr-0" src="{{ movie.cover }}" alt="{{ movie.title }}"
+                    style="align-self:center; width: 10em; height: 15em;">
+            </a>
+            <div class="media-body ml-4">
+                <h5 class="ml-0"><a href="{% url 'movie-detail' movie.title %}">{{ movie.title }}</a></h5>
+                <div id="marching-ants">
+                    <p>{{ movie.summary|truncatewords:120 }}</p>
+                </div>
+            </div>
+
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock grid %}

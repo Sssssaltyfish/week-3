@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load search_extras %}
+
+{% block content %}
+<div class="container">
+    <div class="col ">
+        <div class="row justify-content-center no-gutters mb-4" style="padding-bottom: 5%;">
+            <div class="col-sm mr-0">
+                <img src="{{ actor.cover }}" alt="{{ actor.name }}" class="mr-0" style="margin-left: 40%;">
+            </div>
+            <div class="col-sm">
+                <div class="ml-4">
+                    <h1 class="ml-3" style="color: orange;">{{ actor.name }}</h1>
+                </div>
+                <div id="marching-ants">
+                    <p>{{ actor.summary }}</p>
+                    <ul>
+                        {% for key, val in actor.get_info %}
+                        <p><span>{{ key }}</span>: {{ val }}</p>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-4 mb-0">
+            <h1 style="color: peru; -webkit-text-stroke: 0.2px royalblue;">Related Movies</h1>
+        </div>
+        <div class="row justify-content-center mt-4">
+            {% for movie in actor.movie_set.all %}
+            <div class="col-sm mb-4 mt-2">
+                <div class="row justify-content-center mt-0 mb-0">
+                    <a href="{% url 'movie-detail' movie.title %}">
+                        <img src="{{ movie.cover }}" alt="{{ movie.title }}" style="width: 8em; height: 12em;">
+                    </a>
+                </div>
+                <div class="row justify-content-center">
+                    <a href="{% url 'movie-detail' movie.title %}" style="justify-items: center;">{{ movie.title }}</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="row justify-content-center mt-4 mb-0">
+            <h1 style="color: peru; -webkit-text-stroke: 0.2px royalblue;">Related Actors</h1>
+        </div>
+        <div class="row justify-content-center mt-4">
+            {% for relationship in actor.relationship_set.all %}
+            {% with related=relationship.second_actor %}
+            <div class="col-sm mb-4 mt-2">
+                <div class="row justify-content-center mt-0 mb-0">
+                    <a href="{% url 'actor-detail' related.name %}">
+                        <img src="{{ related.cover }}" alt="{{ related.name }}" style="width: 8em; height: 12em;">
+                    </a>
+                </div>
+                <div class="row justify-content-center">
+                    <a href="{% url 'actor-detail' related.name %}"
+                        style="justify-items: center;">{{ related.name }}({{ relationship.count }})</a>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

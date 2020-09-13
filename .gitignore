@@ -1,0 +1,7 @@
+datalog.txt
+scraper/actorlog.txt
+scraper/logging.txt
+__pycache__
+.vscode
+actors/*
+!merge.py
