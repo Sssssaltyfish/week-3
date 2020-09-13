@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load search_extras %}
+
+{% block content %}
+{% block grid %}
+{% endblock grid %}
+<nav aria-label="pagination">
+    <ul class="pagination fixed-bottom justify-content-md-center"
+        style="margin-left: auto; margin-right: auto; max-width: 30%;">
+        {% if page.has_previous %}
+        <li class="page-item"><a class="page-link" href="{% url 'list-all' page_type 1 %}{{ request.get_full_path|urlarg }}" tabindex="-1">First</a></li>
+        <li class="page-item"><a class="page-link" href="{% url 'list-all' page_type page.previous_page_number %}{{ request.get_full_path|urlarg }}"
+                tabindex="-1">Previous</a></li>
+        {% else %}
+        <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">First</a></li>
+        <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">Previous</a></li>
+        {% endif %}
+
+        {% for i in page.paginator.page_range|slice:"{{ page.number|add:'-2' }}:{{ page.number|add:'2' }}" %}
+        {% if page.number|add:'-2' <= i and i <= page.number|add:'2'%}
+        {% if i == page.number %}
+        <li class="page-item active">
+            {% else %}
+        <li class="page-item">
+            {% endif %}
+            <a class="page-link" href="{% url 'list-all' page_type i %}{{ request.get_full_path|urlarg }}">{{ i }}</a></li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page.has_next %}
+        <li class="page-item"><a class="page-link" href="{% url 'list-all' page_type page.next_page_number %}{{ request.get_full_path|urlarg }}"
+                tabindex="-1">Next</a></li>
+        <li class="page-item"><a class="page-link" href="{% url 'list-all' page_type page.paginator.num_pages %}{{ request.get_full_path|urlarg }}"
+                tabindex="-1">Last</a></li>
+        {% else %}
+        <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">Next</a></li>
+        <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">Last</a></li>
+        {% endif %}
+        <input class="form-control mr-sm-1 ml-3" type="number" name="page_number" id="page-number-input"
+            placeholder="Page" aria-label="Page" min="1" max="{{ page.paginator.num_pages }}"
+            oninput="(() => { this.value = Math.min(this.value, this.max); this.value = Math.max(this.value, this.min);}) ()">
+        <button class="btn btn-success my-2 mr-2 my-sm-0" type="button" id="page-go"
+            style="align-items: end;">Go</button>
+        {% url 'list-all' page_type as partial %}
+        <script type="text/javascript">
+            $('#page-go').attr('disabled', '');
+            $('#page-number-input').on('input', check_empty('page-go'));
+            $('#page-go').click(() => { window.location.href = "{{ partial }}" + $('#page-number-input').val() + "{{ request.get_full_path|urlarg }}"; });
+        </script>
+    </ul>
+
+</nav>
+<div id="tail" style="margin-bottom: 5em;"></div>
+{% endblock content %}
